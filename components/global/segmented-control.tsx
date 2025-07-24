@@ -23,7 +23,7 @@ const SegmentedControl = ({
                 value={item.value}
                 className="data-[state=active]:bg-[#2B2B2B] data-[state=active]:text-white data-[state=active]:rounded-sm py-3"
               >
-                <p className="text-sm">{item.label}</p>
+                <p className="text-xs">{item.label}</p>
               </TabsTrigger>
             ))}
           </TabsList>

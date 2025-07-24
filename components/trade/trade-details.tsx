@@ -21,12 +21,20 @@ const TRADE_DETAILS_ITEMS = [
   {
     value: "positions",
     label: "POSITIONS",
-    contentElement: <div>Positions Content</div>,
+    contentElement: (
+      <p className="text-center py-6 text-muted-foreground">
+        No open positions found.
+      </p>
+    ),
   },
   {
     value: "trade-history",
     label: "TRADE HISTORY",
-    contentElement: <div>Trade History Content</div>,
+    contentElement: (
+      <p className="text-center py-6 text-muted-foreground">
+        No trade history found.
+      </p>
+    ),
   },
 ];
 
