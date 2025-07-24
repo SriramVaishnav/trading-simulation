@@ -27,11 +27,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased lg:px-[560px]`}
       >
-        <Header />
-        {children}
-        <BottomTabs />
+        <section className="lg:relative lg:border-8 lg:border-gray-950 lg:rounded-xl h-full">
+          <Header />
+          {children}
+          <BottomTabs />
+        </section>
       </body>
     </html>
   );

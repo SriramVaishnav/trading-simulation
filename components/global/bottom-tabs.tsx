@@ -6,11 +6,11 @@ import { BOTTOM_TABS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 const BottomTabs = () => {
-  const [activeTab, setActiveTab] = useState(BOTTOM_TABS[0].value);
+  const [activeTab, setActiveTab] = useState(BOTTOM_TABS[1].value);
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-      <TabsList className="fixed bottom-0 left-0 z-50 w-full h-14 flex justify-evenly items-center border-t border-muted bg-background">
+      <TabsList className="absolute bottom-0 left-0 z-10 w-full h-18 flex justify-evenly items-center border-t border-2 py-4 bg-background">
         {BOTTOM_TABS.map((tab) => {
           const isActive = tab.value === activeTab;
 
@@ -18,13 +18,13 @@ const BottomTabs = () => {
             <TabsTrigger
               key={tab.value}
               value={tab.value}
-              className="flex flex-col items-center justify-center h-full w-full rounded-none border-b-2"
+              className="flex flex-col items-center justify-center h-full w-full rounded-none shadow-none border-none"
             >
               {tab.icon}
               <span
                 className={cn(
                   "mt-1 text-sm",
-                  isActive ? "text-black" : "text-gray-700"
+                  isActive ? "text-black" : "text-[#535353B2]"
                 )}
               >
                 {tab.name}
