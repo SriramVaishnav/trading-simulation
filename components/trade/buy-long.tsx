@@ -22,6 +22,10 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { placeTradeOrder, TradeOrder } from "@/store/slices/tradeSlice";
+import { nanoid } from "nanoid";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   orderType: z.enum(["Limit", "Market"]),
@@ -33,6 +37,8 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function BuyLong() {
+  const dispatch = useDispatch();
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -56,7 +62,20 @@ export default function BuyLong() {
   }, [price, shares]);
 
   const onSubmit = (data: FormValues) => {
-    console.log("Form Data:", data);
+    const order: TradeOrder = {
+      id: nanoid(),
+      type: "buy",
+      orderType: data.orderType,
+      price: data.price,
+      shares: data.shares,
+      percent: data.percent,
+      timestamp: Date.now(),
+      status: "open",
+    };
+
+    dispatch(placeTradeOrder(order));
+    toast.success("Order placed successfully!");
+    form.reset();
   };
 
   return (
@@ -65,6 +84,7 @@ export default function BuyLong() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-2 bg-white dark:bg-zinc-900"
       >
+        {/* Order type select */}
         <FormField
           control={form.control}
           name="orderType"
@@ -86,11 +106,13 @@ export default function BuyLong() {
           )}
         />
 
+        {/* Balance info */}
         <div className="flex items-center justify-between text-sm font-semibold">
           <span className="underline">Available to Trade:</span>
           <span>0.00 USDC</span>
         </div>
 
+        {/* Price input */}
         <FormField
           control={form.control}
           name="price"
@@ -116,6 +138,7 @@ export default function BuyLong() {
           )}
         />
 
+        {/* Shares input */}
         <FormField
           control={form.control}
           name="shares"
@@ -137,6 +160,7 @@ export default function BuyLong() {
           )}
         />
 
+        {/* Slider input */}
         <FormField
           control={form.control}
           name="percent"
@@ -160,6 +184,7 @@ export default function BuyLong() {
           )}
         />
 
+        {/* Totals */}
         <div className="border-t pt-3 text-sm space-y-1">
           <div className="flex justify-between">
             <span>Order Total</span>

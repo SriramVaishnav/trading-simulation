@@ -1,29 +1,48 @@
 "use client";
-import React from "react";
 
-const data = [
-  { price: 38, shares: 14984, type: "sell" },
-  { price: 37, shares: 14984, type: "sell" },
-  { price: 36, shares: 14984, type: "sell" },
-  { price: 35.6, shares: 14984, type: "sell" },
-  { price: 35, shares: 14984, type: "sell" },
-  { price: 34.5, shares: 14984, type: "mid" },
-  { price: 34, shares: 14984, type: "buy" },
-  { price: 33.5, shares: 14984, type: "buy" },
-  { price: 33.4, shares: 14984, type: "buy" },
-  { price: 32, shares: 14984, type: "buy" },
-  { price: 30, shares: 14984, type: "buy" },
-];
+import React from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
 
 export default function PriceChart() {
-  const midPrice = 34.5;
+  // Grab the order book values from Redux
+  const { currentPrice, buyOrders, sellOrders } = useSelector(
+    (state: RootState) => state.orderBook
+  );
 
-  const maxSellDiff = Math.max(
-    ...data.filter((d) => d.type === "sell").map((d) => d.price - midPrice)
-  );
-  const maxBuyDiff = Math.max(
-    ...data.filter((d) => d.type === "buy").map((d) => midPrice - d.price)
-  );
+  // Sort sell orders in descending order (highest price first)
+  const sortedSell = [...sellOrders].sort((a, b) => b.price - a.price);
+  // Sort buy orders in descending order as well
+  const sortedBuy = [...buyOrders].sort((a, b) => b.price - a.price);
+
+  // Construct a composite list: sell orders, then a "mid" row for the current price, then buy orders.
+  const data = [
+    ...sortedSell.map((order) => ({
+      price: order.price,
+      shares: order.volume,
+      type: "sell" as const,
+    })),
+    { price: currentPrice, shares: 0, type: "mid" as const },
+    ...sortedBuy.map((order) => ({
+      price: order.price,
+      shares: order.volume,
+      type: "buy" as const,
+    })),
+  ];
+
+  const midPrice = currentPrice;
+
+  // Find the maximum differences needed to compute the width percentages.
+  const sellDiffs = data
+    .filter((d) => d.type === "sell")
+    .map((d) => d.price - midPrice);
+  const buyDiffs = data
+    .filter((d) => d.type === "buy")
+    .map((d) => midPrice - d.price);
+
+  // Protect against division by zero by ensuring a minimum denominator.
+  const maxSellDiff = Math.max(...sellDiffs, 1);
+  const maxBuyDiff = Math.max(...buyDiffs, 1);
 
   return (
     <div className="w-full max-w-md mx-auto">
@@ -39,7 +58,6 @@ export default function PriceChart() {
           const isSell = entry.type === "sell";
 
           let widthPercent = 0;
-
           if (isBuy) {
             const diff = midPrice - entry.price;
             widthPercent = (diff / maxBuyDiff) * 100;
@@ -48,6 +66,7 @@ export default function PriceChart() {
             widthPercent = (diff / maxSellDiff) * 100;
           }
 
+          // Bar color: mid row is black, buy orders show greenish tint, sell orders show reddish tint.
           const barColor = isMid ? "#000" : isBuy ? "#06A9001A" : "#A900221A";
 
           return (
