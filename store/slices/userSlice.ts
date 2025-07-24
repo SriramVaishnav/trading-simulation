@@ -5,7 +5,7 @@ interface Order {
   price: number;
   shares: number;
   side: "buy" | "sell";
-  status: "open" | "filled" | "cancelled";
+  status: "open" | "cancelled";
   createdAt: string;
 }
 
@@ -52,26 +52,6 @@ const userSlice = createSlice({
       }
     },
 
-    fillOrder(state, action: PayloadAction<string>) {
-      const orderId = action.payload;
-      const order = state.openOrders.find((o) => o.id === orderId);
-      if (!order || order.status !== "open") return;
-
-      order.status = "filled";
-
-      // Reduce balance
-      const total = order.price * order.shares;
-      state.balance -= total;
-
-      // Add to positions
-      state.positions.push({
-        id: order.id,
-        shares: order.shares,
-        avgPrice: order.price,
-        createdAt: new Date().toISOString(),
-      });
-    },
-
     depositFunds(state, action: PayloadAction<number>) {
       state.balance += action.payload;
     },
@@ -82,12 +62,7 @@ const userSlice = createSlice({
   },
 });
 
-export const {
-  placeOrder,
-  cancelOrder,
-  fillOrder,
-  depositFunds,
-  resetUserState,
-} = userSlice.actions;
+export const { placeOrder, cancelOrder, depositFunds, resetUserState } =
+  userSlice.actions;
 
 export default userSlice.reducer;

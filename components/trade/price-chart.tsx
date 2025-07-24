@@ -5,17 +5,13 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 
 export default function PriceChart() {
-  // Grab the order book values from Redux
   const { currentPrice, buyOrders, sellOrders } = useSelector(
     (state: RootState) => state.orderBook
   );
 
-  // Sort sell orders in descending order (highest price first)
   const sortedSell = [...sellOrders].sort((a, b) => b.price - a.price);
-  // Sort buy orders in descending order as well
   const sortedBuy = [...buyOrders].sort((a, b) => b.price - a.price);
 
-  // Construct a composite list: sell orders, then a "mid" row for the current price, then buy orders.
   const data = [
     ...sortedSell.map((order) => ({
       price: order.price,
@@ -32,7 +28,6 @@ export default function PriceChart() {
 
   const midPrice = currentPrice;
 
-  // Find the maximum differences needed to compute the width percentages.
   const sellDiffs = data
     .filter((d) => d.type === "sell")
     .map((d) => d.price - midPrice);
@@ -40,7 +35,6 @@ export default function PriceChart() {
     .filter((d) => d.type === "buy")
     .map((d) => midPrice - d.price);
 
-  // Protect against division by zero by ensuring a minimum denominator.
   const maxSellDiff = Math.max(...sellDiffs, 1);
   const maxBuyDiff = Math.max(...buyDiffs, 1);
 
@@ -66,7 +60,6 @@ export default function PriceChart() {
             widthPercent = (diff / maxSellDiff) * 100;
           }
 
-          // Bar color: mid row is black, buy orders show greenish tint, sell orders show reddish tint.
           const barColor = isMid ? "#000" : isBuy ? "#06A9001A" : "#A900221A";
 
           return (

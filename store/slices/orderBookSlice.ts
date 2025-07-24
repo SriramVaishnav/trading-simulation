@@ -42,7 +42,6 @@ const orderBookSlice = createSlice({
 
       state.currentPrice = newPrice;
 
-      // Random shuffle orders slightly
       state.buyOrders = state.buyOrders.map((order) => ({
         ...order,
         volume: Math.round(14000 + Math.random() * 2000),
